@@ -1,5 +1,5 @@
 /*
-  FPM383C Advanced Features Example
+  FPM383F Advanced Features Example
   
   This example demonstrates advanced features including:
   - LED control and patterns
@@ -17,14 +17,14 @@
   - GND: GND
 */
 
-#include <FPM383C.h>
+#include <FPM383F.h>
 
 // Initialize sensor (RX pin 2, TX pin 4, Touch interrupt pin 3)
-FPM383C fingerprint(2, 4, 3);
+FPM383F fingerprint(2, 4, 3);
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("FPM383C Advanced Features Example");
+  Serial.println("FPM383F Advanced Features Example");
   Serial.println("=================================");
   
   // Enable debug mode for detailed output

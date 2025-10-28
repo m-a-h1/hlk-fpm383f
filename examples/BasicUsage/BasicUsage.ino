@@ -1,8 +1,8 @@
 /*
-  FPM383C Basic Usage Example
+  FPM383F Basic Usage Example
   
   This example demonstrates basic fingerprint enrollment and matching
-  using the FPM383C fingerprint sensor.
+  using the FPM383F fingerprint sensor.
   
   Hardware Connections:
   - V_TOUCH: 3.3V
@@ -13,14 +13,14 @@
   - GND: GND
 */
 
-#include <FPM383C.h>
+#include <FPM383F.h>
 
 // Initialize sensor (RX pin 2, TX pin 4, Touch interrupt pin 3)
-FPM383C fingerprint(2, 4, 3);
+FPM383F fingerprint(2, 4, 3);
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("FPM383C Basic Usage Example");
+  Serial.println("FPM383F Basic Usage Example");
   
   // Enable debug output
   fingerprint.enableDebug(true);

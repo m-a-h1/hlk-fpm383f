@@ -1,5 +1,5 @@
 /*
-  FPM383C Detailed Enrollment Example
+  FPM383F Detailed Enrollment Example
   
   This example demonstrates detailed fingerprint enrollment process
   with step-by-step guidance and error handling.
@@ -13,14 +13,14 @@
   - GND: GND
 */
 
-#include <FPM383C.h>
+#include <FPM383F.h>
 
 // Initialize sensor (RX pin 2, TX pin 4, Touch interrupt pin 3)
-FPM383C fingerprint(2, 4, 3);
+FPM383F fingerprint(2, 4, 3);
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("FPM383C Enrollment Example");
+  Serial.println("FPM383F Enrollment Example");
   Serial.println("==========================");
   
   // Initialize sensor

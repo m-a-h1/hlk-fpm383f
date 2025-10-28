@@ -1,6 +1,6 @@
-#include "FPM383C.h"
+#include "FPM383F.h"
 
-FPM383C::FPM383C(int rxPin, int txPin, int touchPin) {
+FPM383F::FPM383F(int rxPin, int txPin, int touchPin) {
   serial = new SoftwareSerial(rxPin, txPin);
   password = 0x00000000;
   this->touchPin = touchPin;
@@ -12,11 +12,11 @@ FPM383C::FPM383C(int rxPin, int txPin, int touchPin) {
   }
 }
 
-FPM383C::~FPM383C() {
+FPM383F::~FPM383F() {
   delete serial;
 }
 
-bool FPM383C::begin(uint32_t baudrate) {
+bool FPM383F::begin(uint32_t baudrate) {
   serial->begin(baudrate);
   delay(200); // Wait for module initialization
   
@@ -24,7 +24,7 @@ bool FPM383C::begin(uint32_t baudrate) {
   return heartbeat();
 }
 
-uint8_t FPM383C::calculateChecksum(uint8_t* data, uint16_t length) {
+uint8_t FPM383F::calculateChecksum(uint8_t* data, uint16_t length) {
   int16_t sum = 0;
   for (uint16_t i = 0; i < length; i++) {
     sum += data[i];
@@ -32,7 +32,7 @@ uint8_t FPM383C::calculateChecksum(uint8_t* data, uint16_t length) {
   return (uint8_t)((~sum) + 1);
 }
 
-uint8_t FPM383C::calculateFrameChecksum(uint16_t dataLength) {
+uint8_t FPM383F::calculateFrameChecksum(uint16_t dataLength) {
   uint8_t frameHeader[] = {FP_FRAME_HEADER_0, FP_FRAME_HEADER_1, FP_FRAME_HEADER_2, 
                            FP_FRAME_HEADER_3, FP_FRAME_HEADER_4, FP_FRAME_HEADER_5, 
                            FP_FRAME_HEADER_6, FP_FRAME_HEADER_7};
@@ -47,7 +47,7 @@ uint8_t FPM383C::calculateFrameChecksum(uint16_t dataLength) {
   return (uint8_t)((~sum) + 1);
 }
 
-void FPM383C::sendFrame(uint8_t cmd1, uint8_t cmd2, uint8_t* data, uint16_t dataLen) {
+void FPM383F::sendFrame(uint8_t cmd1, uint8_t cmd2, uint8_t* data, uint16_t dataLen) {
   uint16_t totalLen = 7 + dataLen;
   
   // Send frame header
@@ -103,7 +103,7 @@ void FPM383C::sendFrame(uint8_t cmd1, uint8_t cmd2, uint8_t* data, uint16_t data
   }
 }
 
-bool FPM383C::receiveFrame(uint8_t* cmd1, uint8_t* cmd2, uint8_t* data, uint16_t maxDataLen, uint16_t* actualDataLen, uint32_t* errorCode) {
+bool FPM383F::receiveFrame(uint8_t* cmd1, uint8_t* cmd2, uint8_t* data, uint16_t maxDataLen, uint16_t* actualDataLen, uint32_t* errorCode) {
   uint32_t timeout = millis() + 5000; // 5 second timeout
   
   // Wait for frame header
@@ -210,12 +210,12 @@ bool FPM383C::receiveFrame(uint8_t* cmd1, uint8_t* cmd2, uint8_t* data, uint16_t
   return true;
 }
 
-bool FPM383C::sendCommand(uint8_t cmd1, uint8_t cmd2, uint8_t* data, uint16_t dataLen) {
+bool FPM383F::sendCommand(uint8_t cmd1, uint8_t cmd2, uint8_t* data, uint16_t dataLen) {
   sendFrame(cmd1, cmd2, data, dataLen);
   return true;
 }
 
-bool FPM383C::receiveResponse(uint8_t cmd1, uint8_t cmd2, uint8_t* data, uint16_t maxDataLen, uint16_t* actualDataLen, uint32_t* errorCode) {
+bool FPM383F::receiveResponse(uint8_t cmd1, uint8_t cmd2, uint8_t* data, uint16_t maxDataLen, uint16_t* actualDataLen, uint32_t* errorCode) {
   uint8_t respCmd1, respCmd2;
   
   if (!receiveFrame(&respCmd1, &respCmd2, data, maxDataLen, actualDataLen, errorCode)) {
@@ -231,7 +231,7 @@ bool FPM383C::receiveResponse(uint8_t cmd1, uint8_t cmd2, uint8_t* data, uint16_
   return true;
 }
 
-bool FPM383C::heartbeat() {
+bool FPM383F::heartbeat() {
   sendCommand(FP_CMD_MAINTENANCE_0, FP_CMD_HEARTBEAT, nullptr, 0);
   
   uint32_t errorCode;
@@ -244,7 +244,7 @@ bool FPM383C::heartbeat() {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-bool FPM383C::setPassword(uint32_t newPassword) {
+bool FPM383F::setPassword(uint32_t newPassword) {
   uint8_t data[4];
   data[0] = (newPassword >> 24) & 0xFF;
   data[1] = (newPassword >> 16) & 0xFF;
@@ -268,7 +268,7 @@ bool FPM383C::setPassword(uint32_t newPassword) {
   return false;
 }
 
-bool FPM383C::reset() {
+bool FPM383F::reset() {
   sendCommand(FP_CMD_SYSTEM_0, FP_CMD_RESET_MODULE, nullptr, 0);
   
   uint32_t errorCode;
@@ -281,7 +281,7 @@ bool FPM383C::reset() {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-bool FPM383C::startEnrollment(uint8_t regIndex) {
+bool FPM383F::startEnrollment(uint8_t regIndex) {
   uint8_t data[1];
   data[0] = regIndex;
   
@@ -297,7 +297,7 @@ bool FPM383C::startEnrollment(uint8_t regIndex) {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-FingerprintEnrollResult FPM383C::queryEnrollmentResult() {
+FingerprintEnrollResult FPM383F::queryEnrollmentResult() {
   FingerprintEnrollResult result = {0, 0, false};
   
   sendCommand(FP_CMD_FINGERPRINT_0, FP_CMD_QUERY_ENROLL, nullptr, 0);
@@ -319,7 +319,7 @@ FingerprintEnrollResult FPM383C::queryEnrollmentResult() {
   return result;
 }
 
-bool FPM383C::saveTemplate(uint16_t fingerprintId) {
+bool FPM383F::saveTemplate(uint16_t fingerprintId) {
   uint8_t data[2];
   data[0] = (fingerprintId >> 8) & 0xFF;
   data[1] = fingerprintId & 0xFF;
@@ -336,7 +336,7 @@ bool FPM383C::saveTemplate(uint16_t fingerprintId) {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-bool FPM383C::querySaveResult() {
+bool FPM383F::querySaveResult() {
   sendCommand(FP_CMD_FINGERPRINT_0, FP_CMD_QUERY_SAVE, nullptr, 0);
   
   uint32_t errorCode;
@@ -349,7 +349,7 @@ bool FPM383C::querySaveResult() {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-bool FPM383C::autoEnroll(uint16_t fingerprintId, uint8_t enrollCount, bool waitFingerLift) {
+bool FPM383F::autoEnroll(uint16_t fingerprintId, uint8_t enrollCount, bool waitFingerLift) {
   uint8_t data[4];
   data[0] = waitFingerLift ? 1 : 0;
   data[1] = enrollCount;
@@ -388,7 +388,7 @@ bool FPM383C::autoEnroll(uint16_t fingerprintId, uint8_t enrollCount, bool waitF
   return false;
 }
 
-bool FPM383C::cancelOperation() {
+bool FPM383F::cancelOperation() {
   sendCommand(FP_CMD_FINGERPRINT_0, FP_CMD_CANCEL, nullptr, 0);
   
   uint32_t errorCode;
@@ -401,7 +401,7 @@ bool FPM383C::cancelOperation() {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-bool FPM383C::startMatch() {
+bool FPM383F::startMatch() {
   sendCommand(FP_CMD_FINGERPRINT_0, FP_CMD_MATCH, nullptr, 0);
   
   uint32_t errorCode;
@@ -414,7 +414,7 @@ bool FPM383C::startMatch() {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-FingerprintMatchResult FPM383C::queryMatchResult() {
+FingerprintMatchResult FPM383F::queryMatchResult() {
   FingerprintMatchResult result = {false, 0, 0};
   
   sendCommand(FP_CMD_FINGERPRINT_0, FP_CMD_QUERY_MATCH, nullptr, 0);
@@ -437,7 +437,7 @@ FingerprintMatchResult FPM383C::queryMatchResult() {
   return result;
 }
 
-FingerprintMatchResult FPM383C::matchSync() {
+FingerprintMatchResult FPM383F::matchSync() {
   FingerprintMatchResult result = {false, 0, 0};
   
   sendCommand(FP_CMD_FINGERPRINT_0, FP_CMD_MATCH_SYNC, nullptr, 0);
@@ -460,7 +460,7 @@ FingerprintMatchResult FPM383C::matchSync() {
   return result;
 }
 
-bool FPM383C::deleteFingerprint(uint16_t fingerprintId) {
+bool FPM383F::deleteFingerprint(uint16_t fingerprintId) {
   uint8_t data[3];
   data[0] = 0x00; // Single fingerprint delete mode
   data[1] = (fingerprintId >> 8) & 0xFF;
@@ -478,7 +478,7 @@ bool FPM383C::deleteFingerprint(uint16_t fingerprintId) {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-bool FPM383C::deleteAllFingerprints() {
+bool FPM383F::deleteAllFingerprints() {
   uint8_t data[3];
   data[0] = 0x01; // Delete all mode
   data[1] = 0x00;
@@ -496,7 +496,7 @@ bool FPM383C::deleteAllFingerprints() {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-bool FPM383C::queryDeleteResult() {
+bool FPM383F::queryDeleteResult() {
   sendCommand(FP_CMD_FINGERPRINT_0, FP_CMD_QUERY_DELETE, nullptr, 0);
   
   uint32_t errorCode;
@@ -509,7 +509,7 @@ bool FPM383C::queryDeleteResult() {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-bool FPM383C::checkFingerprintExists(uint16_t fingerprintId) {
+bool FPM383F::checkFingerprintExists(uint16_t fingerprintId) {
   uint8_t data[2];
   data[0] = (fingerprintId >> 8) & 0xFF;
   data[1] = fingerprintId & 0xFF;
@@ -531,7 +531,7 @@ bool FPM383C::checkFingerprintExists(uint16_t fingerprintId) {
   return false;
 }
 
-uint16_t FPM383C::getTemplateCount() {
+uint16_t FPM383F::getTemplateCount() {
   sendCommand(FP_CMD_SYSTEM_0, FP_CMD_GET_TEMPLATE_COUNT, nullptr, 0);
   
   uint32_t errorCode;
@@ -549,7 +549,7 @@ uint16_t FPM383C::getTemplateCount() {
   return 0;
 }
 
-bool FPM383C::setSleepMode(uint8_t mode) {
+bool FPM383F::setSleepMode(uint8_t mode) {
   uint8_t data[1];
   data[0] = mode;
   
@@ -565,7 +565,7 @@ bool FPM383C::setSleepMode(uint8_t mode) {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-bool FPM383C::setEnrollCount(uint8_t count) {
+bool FPM383F::setEnrollCount(uint8_t count) {
   if (count < 1 || count > 6) return false;
   
   uint8_t data[1];
@@ -583,7 +583,7 @@ bool FPM383C::setEnrollCount(uint8_t count) {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-bool FPM383C::setLED(uint8_t mode, uint8_t color, uint8_t param1, uint8_t param2, uint8_t param3) {
+bool FPM383F::setLED(uint8_t mode, uint8_t color, uint8_t param1, uint8_t param2, uint8_t param3) {
   uint8_t data[5];
   data[0] = mode;
   data[1] = color;
@@ -603,7 +603,7 @@ bool FPM383C::setLED(uint8_t mode, uint8_t color, uint8_t param1, uint8_t param2
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-String FPM383C::getModuleId() {
+String FPM383F::getModuleId() {
   sendCommand(FP_CMD_MAINTENANCE_0, FP_CMD_GET_MODULE_ID, nullptr, 0);
   
   uint32_t errorCode;
@@ -627,7 +627,7 @@ String FPM383C::getModuleId() {
   return "";
 }
 
-bool FPM383C::setBaudrate(uint32_t baudrate) {
+bool FPM383F::setBaudrate(uint32_t baudrate) {
   uint8_t data[4];
   data[0] = (baudrate >> 24) & 0xFF;
   data[1] = (baudrate >> 16) & 0xFF;
@@ -654,7 +654,7 @@ bool FPM383C::setBaudrate(uint32_t baudrate) {
   return false;
 }
 
-bool FPM383C::isFingerPresent() {
+bool FPM383F::isFingerPresent() {
   if (touchPin >= 0) {
     return digitalRead(touchPin) == HIGH;
   }
@@ -676,7 +676,7 @@ bool FPM383C::isFingerPresent() {
   return false;
 }
 
-bool FPM383C::waitForFinger(uint32_t timeout) {
+bool FPM383F::waitForFinger(uint32_t timeout) {
   uint32_t startTime = millis();
   
   while (millis() - startTime < timeout) {
@@ -689,7 +689,7 @@ bool FPM383C::waitForFinger(uint32_t timeout) {
   return false;
 }
 
-bool FPM383C::waitForFingerRemoval(uint32_t timeout) {
+bool FPM383F::waitForFingerRemoval(uint32_t timeout) {
   uint32_t startTime = millis();
   
   while (millis() - startTime < timeout) {
@@ -702,7 +702,7 @@ bool FPM383C::waitForFingerRemoval(uint32_t timeout) {
   return false;
 }
 
-bool FPM383C::updateFeature(uint16_t fingerprintId) {
+bool FPM383F::updateFeature(uint16_t fingerprintId) {
   uint8_t data[2];
   data[0] = (fingerprintId >> 8) & 0xFF;
   data[1] = fingerprintId & 0xFF;
@@ -719,7 +719,7 @@ bool FPM383C::updateFeature(uint16_t fingerprintId) {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-bool FPM383C::queryUpdateResult() {
+bool FPM383F::queryUpdateResult() {
   sendCommand(FP_CMD_FINGERPRINT_0, FP_CMD_QUERY_UPDATE, nullptr, 0);
   
   uint32_t errorCode;
@@ -732,11 +732,11 @@ bool FPM383C::queryUpdateResult() {
   return errorCode == FP_ERROR_SUCCESS;
 }
 
-uint32_t FPM383C::getLastError() {
+uint32_t FPM383F::getLastError() {
   return lastError;
 }
 
-String FPM383C::getErrorString(uint32_t errorCode) {
+String FPM383F::getErrorString(uint32_t errorCode) {
   switch (errorCode) {
     case FP_ERROR_SUCCESS: return "Success";
     case FP_ERROR_UNKNOWN_CMD: return "Unknown command";
@@ -759,12 +759,12 @@ String FPM383C::getErrorString(uint32_t errorCode) {
   }
 }
 
-void FPM383C::enableDebug(bool enable) {
+void FPM383F::enableDebug(bool enable) {
   debugEnabled = enable;
 }
 
-void FPM383C::debugPrint(String message) {
+void FPM383F::debugPrint(String message) {
   if (debugEnabled) {
-    Serial.println("[FPM383C] " + message);
+    Serial.println("[FPM383F] " + message);
   }
 }

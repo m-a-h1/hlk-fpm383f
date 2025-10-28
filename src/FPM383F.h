@@ -1,5 +1,5 @@
-#ifndef FPM383C_H
-#define FPM383C_H
+#ifndef FPM383F_H
+#define FPM383F_H
 
 #include <Arduino.h>
 #include <SoftwareSerial.h>
@@ -111,7 +111,7 @@ struct FingerprintStorageInfo {
   uint8_t storageMap[64];
 };
 
-class FPM383C {
+class FPM383F {
 private:
   SoftwareSerial* serial;
   uint32_t password;
@@ -126,8 +126,8 @@ private:
   bool receiveFrame(uint8_t* cmd1, uint8_t* cmd2, uint8_t* data, uint16_t maxDataLen, uint16_t* actualDataLen, uint32_t* errorCode);
   
 public:
-  FPM383C(int rxPin, int txPin, int touchPin = -1);
-  ~FPM383C();
+  FPM383F(int rxPin, int txPin, int touchPin = -1);
+  ~FPM383F();
   
   // Initialization
   bool begin(uint32_t baudrate = 57600);

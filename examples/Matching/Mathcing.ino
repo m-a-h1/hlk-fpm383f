@@ -1,5 +1,5 @@
 /*
-  FPM383C Fingerprint Matching Example
+  FPM383F Fingerprint Matching Example
   
   This example demonstrates fingerprint verification and matching
   with detailed feedback and statistics.
@@ -13,10 +13,10 @@
   - GND: GND
 */
 
-#include <FPM383C.h>
+#include <FPM383F.h>
 
 // Initialize sensor (RX pin 2, TX pin 4, Touch interrupt pin 3)
-FPM383C fingerprint(2, 4, 3);
+FPM383F fingerprint(2, 4, 3);
 
 // Statistics tracking
 struct MatchingStats {
@@ -33,7 +33,7 @@ MatchingStats stats = {0, 0, 0, 0, 0, 0, 0};
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("FPM383C Matching Example");
+  Serial.println("FPM383F Matching Example");
   Serial.println("========================");
   
   // Initialize sensor

@@ -1,12 +1,12 @@
 #######################################
-# Syntax Coloring Map For FPM383C
+# Syntax Coloring Map For FPM383F
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
-FPM383C	KEYWORD1
+FPM383F	KEYWORD1
 FingerprintMatchResult	KEYWORD1
 FingerprintEnrollResult	KEYWORD1
 FingerprintStorageInfo	KEYWORD1
