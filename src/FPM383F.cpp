@@ -428,9 +428,10 @@ FingerprintMatchResult FPM383C::queryMatchResult() {
   }
   
   if (errorCode == FP_ERROR_SUCCESS && dataLen >= 6) {
-    result.matched = (data[0] == 1);
     result.matchScore = (data[1] << 8) | data[2];
     result.fingerprintId = (data[4] << 8) | data[5];
+    // A match is found if score > 0 and ID is valid (not 65535)
+    result.matched = (result.matchScore > 0 && result.fingerprintId != 65535);
   }
   
   return result;
@@ -450,9 +451,10 @@ FingerprintMatchResult FPM383C::matchSync() {
   }
   
   if (errorCode == FP_ERROR_SUCCESS && dataLen >= 6) {
-    result.matched = (data[0] == 1);
     result.matchScore = (data[1] << 8) | data[2];
     result.fingerprintId = (data[4] << 8) | data[5];
+    // A match is found if score > 0 and ID is valid (not 65535)
+    result.matched = (result.matchScore > 0 && result.fingerprintId != 65535);
   }
   
   return result;
